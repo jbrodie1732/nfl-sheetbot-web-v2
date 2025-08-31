@@ -9,7 +9,10 @@ import { kickoffBucket, nextKickoffIso } from '@/lib/time';
 
 type GameRow = {
   id: number;
+  week_number: number;
   starts_at: string;
+  submit_open_at: string | null;
+  freeze_at: string | null;
   favorite_team_abbr: string;
   dog_team_abbr: string;
   freeze_spread: number;
