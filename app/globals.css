@@ -1,0 +1,50 @@
+
+:root{
+  --bg:#0b0f14;
+  --fg:#e6edf3;
+  --muted:#91a4b7;
+  --card:#131923;
+  --chip:#1b2430;
+  --on:#193a2a;
+  --on-border:#2a7a4b;
+  --accent:#9aa9ff;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Noto Sans, "Apple Color Emoji","Segoe UI Emoji";
+}
+a{color:var(--accent);text-decoration:none}
+.container{max-width:900px;margin:0 auto;padding:16px}
+.header{
+  position:sticky;top:0;z-index:10;
+  background:linear-gradient(180deg, rgba(11,15,20,0.95), rgba(11,15,20,0.75) 80%, transparent);
+  backdrop-filter:blur(6px);
+  padding:12px 0 8px;border-bottom:1px solid #1b2230;
+}
+.title{font-weight:700;text-align:center;letter-spacing:0.06em}
+.countdown{font-size:28px;text-align:center;margin-top:6px;color:var(--muted)}
+.subinfo{display:flex;gap:8px;justify-content:center;color:var(--muted);font-size:12px}
+.section-title{margin:22px 0 8px;font-weight:700;opacity:.9}
+.grid{display:grid;grid-template-columns:1fr;gap:10px}
+.card{border:1px solid #1b2230;background:var(--card);border-radius:14px;padding:12px}
+.lock{color:var(--muted);font-size:12px;margin:8px 0}
+.chips{display:flex;gap:8px;justify-content:center;margin:8px 0}
+.chip{background:var(--chip);border:1px solid #2a3342;color:var(--fg);padding:6px 10px;border-radius:999px;font-size:12px}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.btn{
+  border:1px solid #2a3342;background:#101621;color:var(--fg);
+  border-radius:10px;padding:10px 12px;text-align:center;font-weight:600
+}
+.btn.on{background:var(--on);border-color:var(--on-border)}
+.progress{
+  display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px
+}
+.progress .chip{background:var(--on);border-color:var(--on-border)}
+.small{font-size:12px;color:var(--muted)}
+.center{text-align:center}
+hr{border:none;border-top:1px solid #1b2230;margin:16px 0}
+@media(min-width:760px){ .grid{grid-template-columns:1fr 1fr} }

@@ -1,0 +1,13 @@
+
+# Node
+node_modules
+.next
+out
+dist
+.env
+.env.*
+.vercel
+.supabase
+.DS_Store
+*.log
+coverage
