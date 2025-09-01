@@ -1,5 +1,5 @@
 
-// components/GameCard.tsx (v3 - await onChanged before toast)
+// components/GameCard.tsx (v4 - smaller lock pill on mobile)
 'use client';
 import { useState, useMemo, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
@@ -122,7 +122,9 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
       <div className="hdr-grid">
         <div />
         <div className="h2 center">{headerText}</div>
-        <div className="right"><LockCountdown startsAtISO={game.starts_at} /></div>
+        <div className="right">
+          <div className="lock-scale"><LockCountdown startsAtISO={game.starts_at} /></div>
+        </div>
       </div>
 
       <div className="lock-subtext">Kickoff: {fmtET(game.starts_at)}</div>
@@ -198,6 +200,10 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
           padding: 2px 6px;
           font-size: 11px;
           color: white;
+        }
+        @media (max-width: 480px){
+          .lock-scale{ transform: scale(0.85); transform-origin: top right; }
+          .h2{ font-size:16px; }
         }
       `}</style>
     </div>
