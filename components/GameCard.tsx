@@ -54,12 +54,12 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged }: {
   const total = game.freeze_total!=null ? fmt1(game.freeze_total) : '';
 
   const favLabel = `Pick FAV: ${game.favorite_team_abbr ?? ''}${favSpread?` (${favSpread})`:''}`;
-  const dogLabel = `Pick DOG: ${game.dog_team_abbr ?? ''}${dogSpread?` (${dogSpread.startsWith('-')?'':'+'}${dogSpread}`:''}`;
+  const dogLabel = `Pick DOG: ${game.dog_team_abbr ?? ''}${dogSpread?` (${dogSpread.startsWith('-')?'':'+'}${dogSpread}`:''})`;
   const overLabel = `Pick OVER ${total?`(o${total})`:''}`;
   const underLabel = `Pick UNDER ${total?`(u${total})`:''}`;
 
   const favSelLabel = `FAV Selected: ${game.favorite_team_abbr ?? ''}${favSpread?` (${favSpread})`:''}`;
-  const dogSelLabel = `DOG Selected: ${game.dog_team_abbr ?? ''}${dogSpread?` (${dogSpread.startsWith('-')?'':'+'}${dogSpread}`:''}`;
+  const dogSelLabel = `DOG Selected: ${game.dog_team_abbr ?? ''}${dogSpread?` (${dogSpread.startsWith('-')?'':'+'}${dogSpread}`:''})`;
   const overSelLabel = `OVER Selected ${total?`(o${total})`:''}`;
   const underSelLabel = `UNDER Selected ${total?`(u${total})`:''}`;
 
