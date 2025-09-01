@@ -1,5 +1,5 @@
 
-// components/LeaderboardTable.tsx (responsive mobile-first)
+// components/LeaderboardTable.tsx (mobile dot for "You" chip; responsive table)
 'use client'
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
@@ -117,6 +117,8 @@ export default function LeaderboardTable({ mode, weekNumber }: { mode: 'season'|
         td.name { white-space: nowrap; }
         .name-text { display:inline-block; max-width: 100%; vertical-align: bottom; overflow: hidden; text-overflow: ellipsis; }
         tr:hover td { background: #fafafa; }
+
+        /* Desktop/tablet "You" chip */
         .you {
           margin-left: 8px;
           font-size: 11px;
@@ -126,6 +128,7 @@ export default function LeaderboardTable({ mode, weekNumber }: { mode: 'season'|
           color: #1e40af;
           border: 1px solid #bfdbfe;
         }
+
         .num { text-align: right; white-space: nowrap; }
         .rank { width: 44px; }
         .c-rank { width: 44px; }
@@ -133,13 +136,23 @@ export default function LeaderboardTable({ mode, weekNumber }: { mode: 'season'|
         .c-num { width: 56px; }
         .c-week { width: 64px; }
 
-        /* Mobile: tighter fonts, hide Week column, tighten padding */
+        /* Mobile: tighter fonts, hide Week column, tighten padding, and swap "You" chip for a dot */
         @media (max-width: 480px){
           th, td { padding: 8px 8px; font-size: 12px; }
-          .you { font-size: 10px; padding: 2px 5px; }
           .c-week, .week { display: none; } /* hide Week column */
           .c-num { width: 48px; }
           .rank { width: 36px; }
+
+          /* Replace the text chip with a small light-blue dot so it never gets cut off */
+          .you {
+            display:inline-block;
+            width: 8px; height: 8px;
+            padding: 0; margin-left: 6px;
+            border-radius: 9999px;
+            background: #93c5fd;     /* light blue */
+            border: 1px solid #60a5fa;
+            color: transparent; font-size: 0; line-height: 0; /* hide "You" text */
+          }
         }
       `}</style>
     </div>

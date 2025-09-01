@@ -1,4 +1,5 @@
-// components/HeaderMenu.tsx (vertical stack + compact font)
+
+// components/HeaderMenu.tsx (vertical stack, extra spacing, compact font, dark popover with readable contrast)
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
@@ -48,37 +49,34 @@ export default function HeaderMenu(){
           border:1px solid #d1d5db; background:#fff; color:#111827;
           font-weight:800;
         }
-        .hm-btn:hover{ background:#ffffff; }
+        .hm-btn:hover{ background:#f9fafb; }
         .bars{ font-size:16px; line-height:1; }
 
         .hm-pop{
           position:absolute; right:0; top: calc(100% + 8px);
-          min-width: 150px;
-          display:flex; flex-direction: column;
-          background:transparent; border:1px solid #e5e7eb; border-radius:12px;
+          min-width: 180px;
+          display:flex; flex-direction: column; gap: 8px;
+          background:#111827; border:1px solid #374151; border-radius:12px;
           box-shadow:0 8px 28px rgba(0,0,0,.08);
-          padding:6px;
+          padding:8px;
           z-index:70;
         }
 
-        /* Each item on its own line (single-column stack) */
+        /* Each item on its own line (single-column stack) with extra vertical space */
         .hm-item{
-          display:block;
-          width:100%;
-          padding:8px 10px;
-          border-radius:8px;
-          text-decoration:none;
-          color:#111827;
-          font-weight:500;
-          font-size:10px;           /* compact by default */
-          line-height:1.25;
-          white-space:nowrap;
+          display:block; width:100%;
+          padding:10px 12px;
+          border-radius:8px; text-decoration:none;
+          color:#f9fafb;                       /* readable on dark popover */
+          font-weight:600; font-size:13px;     /* compact by default */
+          line-height:1.25; white-space:nowrap;
         }
-        .hm-item:hover{ background:#ffffff; }
+        .hm-item:hover{ background:#1f2937; }  /* subtle hover on dark */
 
         @media (max-width:480px){
           .hm-btn{ width:32px; height:30px; }
-          .hm-item{ font-size:10px; padding:8px 8px; }
+          .hm-item{ font-size:12px; padding:12px 10px; } /* slightly more vertical space on mobile */
+          .hm-pop{ gap: 10px; padding:10px; }
         }
       `}</style>
     </div>
