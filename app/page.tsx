@@ -1,3 +1,4 @@
+
 'use client';
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { supabase } from '@/lib/supabaseClient';
@@ -75,7 +76,6 @@ export default function Page(){
     const { data: { user } } = await supabase.auth.getUser();
     setMe(user ?? null);
 
-    // Resolve week number: env override or DB rpc
     const overrideEnv = process.env.NEXT_PUBLIC_APP_WEEK_NUMBER;
     let wno = overrideEnv ? Number(overrideEnv) : null;
     if (!wno) {
@@ -85,7 +85,6 @@ export default function Page(){
     if (!wno) return;
     setWeekNumber(wno);
 
-    // Games
     const { data: gs } = await supabase
       .from('vw_game_with_freeze')
       .select('*')
@@ -94,7 +93,6 @@ export default function Page(){
     const games = (gs as GameRow[] ?? []).slice().sort((a,b)=> new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
     setRows(games);
 
-    // My picks (view hides others until kickoff)
     if (user) {
       const { data: my } = await supabase
         .from('vw_pick_public')
@@ -163,7 +161,6 @@ export default function Page(){
     return out;
   }, [rows, pickMap]);
 
-  // Group rows by time window label
   const grouped = useMemo(() => {
     const groups: Array<{ label: string; items: GameRow[] }> = [];
     let currentLabel: string | null = null;
@@ -183,7 +180,7 @@ export default function Page(){
   if (!me) {
     return (
       <div className="container">
-        <div className="card" style={{textAlign:'center'}}>
+        <div className="card center">
           <h1 className="h1">SHEET MEAT | WEEK {weekNumber || ''}</h1>
           <p className="small">You are not signed in.</p>
           <a className="btn" href="/login">Sign in</a>

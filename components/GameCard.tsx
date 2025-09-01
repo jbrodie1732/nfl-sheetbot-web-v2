@@ -1,5 +1,6 @@
+
 'use client';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { fmtET } from '@/lib/time';
 
@@ -13,7 +14,7 @@ type Game = {
   freeze_total: number | null;
   away_abbr: string;
   home_abbr: string;
-  header: string;
+  header: string; // from view (not trusted for spread position)
 };
 
 type PickMap = { [k: string]: { pick_type: 'ATS_FAV'|'ATS_DOG'|'TOTAL_OVER'|'TOTAL_UNDER'; game_id: number } };
@@ -49,27 +50,47 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged }: {
   const overSel = myPicks['TOTAL_OVER']?.game_id === game.id;
   const underSel = myPicks['TOTAL_UNDER']?.game_id === game.id;
 
-  const favSpread = game.freeze_spread!=null ? fmt1(game.freeze_spread) : '';
-  const dogSpread = game.freeze_spread!=null ? fmt1(-1*Number(game.freeze_spread)) : '';
+  const favSpreadNum = game.freeze_spread;
+  const favSpread = favSpreadNum!=null ? fmt1(favSpreadNum) : '';
+  const dogSpreadNum = favSpreadNum!=null ? -1*Number(favSpreadNum) : null;
+  const dogSpread = dogSpreadNum!=null ? (dogSpreadNum>0?'+':'') + fmt1(dogSpreadNum) : '';
+
   const total = game.freeze_total!=null ? fmt1(game.freeze_total) : '';
 
+  // Header: FAV (-x.x) @ OTHER
+  const headerText = useMemo(() => {
+    if (game.favorite_team_abbr && favSpreadNum!=null) {
+      const fav = game.favorite_team_abbr;
+      const other = (fav === game.home_abbr ? game.away_abbr : game.home_abbr) || '';
+      return `${fav} (${fmt1(favSpreadNum)}) @ ${other}`;
+    }
+    return `${game.away_abbr} @ ${game.home_abbr}`;
+  }, [game.favorite_team_abbr, favSpreadNum, game.away_abbr, game.home_abbr]);
+
   const favLabel = `Pick FAV: ${game.favorite_team_abbr ?? ''}${favSpread?` (${favSpread})`:''}`;
-  const dogLabel = `Pick DOG: ${game.dog_team_abbr ?? ''}${dogSpread?` (${dogSpread.startsWith('-')?'':'+'}${dogSpread}`:''})`;
+  const dogLabel = `Pick DOG: ${game.dog_team_abbr ?? ''}${dogSpread?` (${dogSpread})`:''}`;
   const overLabel = `Pick OVER ${total?`(o${total})`:''}`;
   const underLabel = `Pick UNDER ${total?`(u${total})`:''}`;
 
   const favSelLabel = `FAV Selected: ${game.favorite_team_abbr ?? ''}${favSpread?` (${favSpread})`:''}`;
-  const dogSelLabel = `DOG Selected: ${game.dog_team_abbr ?? ''}${dogSpread?` (${dogSpread.startsWith('-')?'':'+'}${dogSpread}`:''})`;
+  const dogSelLabel = `DOG Selected: ${game.dog_team_abbr ?? ''}${dogSpread?` (${dogSpread})`:''}`;
   const overSelLabel = `OVER Selected ${total?`(o${total})`:''}`;
   const underSelLabel = `UNDER Selected ${total?`(u${total})`:''}`;
 
   return (
     <div className="card" style={{marginBottom:10}}>
-      <div className="row" style={{justifyContent:'space-between'}}>
-        <div className="h2">{game.header}</div>
-        <div className="time-chip">Locks: {fmtET(game.starts_at)}</div>
+      <div className="h2">{headerText}</div>
+
+      {/* fact tiles */}
+      <div className="fact-tiles">
+        <span className="tile">Fav: {game.favorite_team_abbr ?? '-'} {favSpread?`(${favSpread})`:''}</span>
+        <span className="tile">Dog: {game.dog_team_abbr ?? '-' } {dogSpread?`(${dogSpread})`:''}</span>
+        <span className="tile">O/U: {total || '-'}</span>
       </div>
-      <div className="small">Fav / Dog / O-U</div>
+
+      {/* lock time as subtle subtext */}
+      <div className="lock-subtext">Locks: {fmtET(game.starts_at)}</div>
+
       <div className="button-columns" style={{marginTop:8}}>
         <div className="col">
           <button disabled={busy||locked} onClick={()=>choose('ATS_FAV')} className={`btn ${favSel?'btn-selected':''}`}>{favSel?favSelLabel:favLabel}</button>

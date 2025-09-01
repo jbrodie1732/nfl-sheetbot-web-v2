@@ -1,3 +1,4 @@
+
 'use client';
 import { useEffect, useState } from 'react';
 import { fmtET } from '@/lib/time';
@@ -34,38 +35,32 @@ export default function MyWeekHeader({
     return `${h}h ${m}m ${sec}s`;
   })();
 
-  const chips: Array<[PickType,string]> = [
-    ['ATS_FAV', 'FAV'],
-    ['ATS_DOG', 'DOG'],
-    ['TOTAL_OVER', 'OVER'],
-    ['TOTAL_UNDER', 'UNDER'],
+  const order: Array<[PickType,string]> = [
+    ['ATS_FAV','FAV'],
+    ['ATS_DOG','DOG'],
+    ['TOTAL_OVER','OVER'],
+    ['TOTAL_UNDER','UNDER'],
   ];
 
   return (
     <div className="sticky-header">
       <div className="container">
         <div className="card header-card">
-          <div className="row" style={{justifyContent:'space-between'}}>
-            <div>
-              <div className="h1">SHEET MEAT | WEEK {weekNumber}</div>
-              <div className="small">
-                {submitOpenAt ? <span>Submissions open: {fmtET(submitOpenAt)}</span> : null}
-                {submitOpenAt && freezeAt ? <span> &nbsp;•&nbsp; </span> : null}
-                {freezeAt ? <span>Lines frozen: {fmtET(freezeAt)}</span> : null}
-              </div>
-            </div>
+          <div className="h1">SHEET MEAT | WEEK {weekNumber}</div>
+          <div style={{display:'flex',gap:12,justifyContent:'center',marginTop:8}}>
             <div className="countdown-wrap"><div className="countdown">{countdown}</div></div>
+          </div>
+          <div className="small center" style={{marginTop:8}}>
+            {submitOpenAt ? <div>Submissions open: {fmtET(submitOpenAt)}</div> : null}
+            {freezeAt ? <div>Lines frozen: {fmtET(freezeAt)}</div> : null}
           </div>
 
           <div className="chip-row">
-            {chips.map(([key,label]) => {
+            {order.map(([key,label]) => {
               const s = summaryByType[key];
               const on = Boolean(s);
-              return (
-                <span key={key} className={`chip ${on ? 'chip-on':''}`}>
-                  {s ? s : label}
-                </span>
-              );
+              const text = on ? `${label}: ${s} ✓` : label;
+              return <span key={key} className={`chip ${on?'chip-on':''}`}>{text}</span>;
             })}
           </div>
         </div>
