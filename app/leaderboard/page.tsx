@@ -40,7 +40,7 @@ export default async function Page(){
         <div style={styles.actions}>
           <EditNicknamePopover />
           <Link href="/" style={styles.returnTile} aria-label="Return to home">
-            ⬅️ Return to Home
+            ⬅️ Home
           </Link>
         </div>
       </div>
