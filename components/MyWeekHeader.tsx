@@ -7,13 +7,11 @@ type PickType = 'ATS_FAV'|'ATS_DOG'|'TOTAL_OVER'|'TOTAL_UNDER';
 
 export default function MyWeekHeader({
   weekNumber,
-  submitOpenAt,
   freezeAt,
   nextKickoffISO,
   summaryByType
 }: {
   weekNumber: number;
-  submitOpenAt: string | null | undefined;
   freezeAt: string | null | undefined;
   nextKickoffISO: string | null | undefined;
   summaryByType: Record<string, string>;
@@ -51,7 +49,6 @@ export default function MyWeekHeader({
             <div className="countdown-wrap"><div className="countdown">{countdown}</div></div>
           </div>
           <div className="small center" style={{marginTop:8}}>
-            {submitOpenAt ? <div>Submissions open: {fmtET(submitOpenAt)}</div> : null}
             {freezeAt ? <div>Lines frozen: {fmtET(freezeAt)}</div> : null}
           </div>
 

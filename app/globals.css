@@ -45,6 +45,10 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0}
 /* per-game facts tiles (Fav/Dog/O-U) */
 .fact-tiles{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
 .fact-tiles .tile{background:var(--chip);border:1px solid var(--chip-border);border-radius:10px;padding:6px 10px;font-size:12px}
+
+/* Toast */
+.toast-wrap{position:fixed;top:10px;left:0;right:0;display:flex;justify-content:center;z-index:50;pointer-events:none}
+.toast{pointer-events:auto;background:#102a18;border:1px solid #275236;color:#c7f2d8;padding:10px 14px;border-radius:999px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.35)}
 @media (max-width:540px){
   .container{padding:12px}
   .h1{font-size:24px}

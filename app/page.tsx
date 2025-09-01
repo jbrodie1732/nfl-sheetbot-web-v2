@@ -13,7 +13,6 @@ type GameRow = {
   id: number;
   week_number: number;
   starts_at: string;
-  submit_open_at: string | null;
   freeze_at: string | null;
   favorite_team_abbr: string | null;
   dog_team_abbr: string | null;
@@ -71,6 +70,12 @@ export default function Page(){
   const [rows, setRows] = useState<GameRow[]>([]);
   const [me, setMe] = useState<any>(null);
   const [pickMap, setPickMap] = useState<PickMap>({});
+  const [toast, setToast] = useState<string>('');
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 1600);
+  };
 
   const load = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -161,6 +166,7 @@ export default function Page(){
     return out;
   }, [rows, pickMap]);
 
+  // Group rows by time window label
   const grouped = useMemo(() => {
     const groups: Array<{ label: string; items: GameRow[] }> = [];
     let currentLabel: string | null = null;
@@ -191,9 +197,12 @@ export default function Page(){
 
   return (
     <div>
+      <div className="toast-wrap" aria-live="polite" aria-atomic="true">
+        {toast ? <div className="toast">{toast}</div> : null}
+      </div>
+
       <MyWeekHeader
         weekNumber={weekNumber}
-        submitOpenAt={rows[0]?.submit_open_at}
         freezeAt={rows[0]?.freeze_at}
         nextKickoffISO={nextKickoffISO}
         summaryByType={summaryByType}
@@ -204,7 +213,7 @@ export default function Page(){
           <div key={group.label}>
             <div className="section-title">{group.label}</div>
             {group.items.map((r) => (
-              <GameCard key={r.id} weekNumber={weekNumber} game={r as any} myPicks={pickMap} onChanged={load} />
+              <GameCard key={r.id} weekNumber={weekNumber} game={r as any} myPicks={pickMap} onChanged={load} onSaved={showToast} />
             ))}
           </div>
         ))}

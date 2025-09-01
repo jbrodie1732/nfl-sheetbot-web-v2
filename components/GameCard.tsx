@@ -24,11 +24,12 @@ const fmt1 = (x: unknown) => {
   return Number.isFinite(n) ? n.toFixed(1) : String(x ?? '');
 };
 
-export default function GameCard({ game, weekNumber, myPicks, onChanged }: {
+export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved }: {
   game: Game;
   weekNumber: number;
   myPicks: PickMap;
   onChanged: () => void;
+  onSaved: (msg: string) => void;
 }){
   const [busy, setBusy] = useState(false);
   const locked = Date.now() >= new Date(game.starts_at).getTime();
@@ -42,7 +43,8 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged }: {
       p_pick_type: type
     });
     setBusy(false);
-    if (error) alert(error.message); else onChanged();
+    if (error) alert(error.message);
+    else { onChanged(); onSaved('Pick Saved!'); }
   }
 
   const favSel = myPicks['ATS_FAV']?.game_id === game.id;
@@ -81,15 +83,17 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged }: {
     <div className="card" style={{marginBottom:10}}>
       <div className="h2">{headerText}</div>
 
-      {/* fact tiles */}
+      {/* lock time first */}
+      <div className="lock-subtext">Locks: {fmtET(game.starts_at)}</div>
+
+      {/* fact tiles after lock + hr divider before buttons */}
       <div className="fact-tiles">
         <span className="tile">Fav: {game.favorite_team_abbr ?? '-'} {favSpread?`(${favSpread})`:''}</span>
         <span className="tile">Dog: {game.dog_team_abbr ?? '-' } {dogSpread?`(${dogSpread})`:''}</span>
         <span className="tile">O/U: {total || '-'}</span>
       </div>
 
-      {/* lock time as subtle subtext */}
-      <div className="lock-subtext">Locks: {fmtET(game.starts_at)}</div>
+      <hr />
 
       <div className="button-columns" style={{marginTop:8}}>
         <div className="col">
