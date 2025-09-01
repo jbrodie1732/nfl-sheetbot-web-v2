@@ -53,7 +53,7 @@ export default function MyWeekHeader({
             </div>
             <div className="right">
               <Link href="/leaderboard" className="tile-link" aria-label="Open Leaderboard">
-                <span className="emoji" aria-hidden>🏆</span>
+                <span className="emoji" aria-hidden>🏆 </span>
                 <span className="tile-text">Leaderboard</span>
               </Link>
             </div>
@@ -99,8 +99,8 @@ export default function MyWeekHeader({
           white-space: nowrap;
         }
         .tile-link:hover { background: #f9fafb; }
-        .emoji { font-size: 14px; }
-        .tile-text { display:inline-block; }
+        .emoji { font-size: 10px; }
+        .tile-text { display:inline-block; font-size: 12px; }
 
         .kickoff-wrap { display:flex; justify-content:center; margin-top: 8px; }
         .kickoff-chip {
@@ -124,7 +124,7 @@ export default function MyWeekHeader({
 
         /* Mobile tweaks */
         @media (max-width: 480px){
-          .tile-link{ font-size:12px; padding:5px 8px; }
+          .tile-link{ font-size:10px; padding:3px 6px; }
           .kickoff-chip{ font-size:12px; padding:5px 10px; }
           .chip{ font-size:12px; padding:3px 8px; }
           .h1{ font-size:18px; }
