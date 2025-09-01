@@ -1,6 +1,8 @@
 
+// components/MyWeekHeader.tsx (updated v3 - bordered countdown + tile)
 'use client';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { fmtET } from '@/lib/time';
 
 type PickType = 'ATS_FAV'|'ATS_DOG'|'TOTAL_OVER'|'TOTAL_UNDER';
@@ -22,16 +24,16 @@ export default function MyWeekHeader({
     return () => clearInterval(t);
   }, []);
 
-  const countdown = (() => {
+  function fmtCountdown() {
     if (!nextKickoffISO) return 'All games complete';
     const target = new Date(nextKickoffISO).getTime();
     const diff = Math.max(0, target - now);
-    const s = Math.floor(diff / 1000);
-    const h = Math.floor(s / 3600);
-    const m = Math.floor((s % 3600) / 60);
-    const sec = s % 60;
-    return `${h}h ${m}m ${sec}s`;
-  })();
+    const d = Math.floor(diff / 86_400_000);
+    const h = Math.floor((diff % 86_400_000) / 3_600_000).toLocaleString('en-US', {minimumIntegerDigits: 2});
+    const m = Math.floor((diff % 3_600_000) / 60_000).toLocaleString('en-US', {minimumIntegerDigits: 2});
+    const s = Math.floor((diff % 60_000) / 1000).toLocaleString('en-US', {minimumIntegerDigits: 2});
+    return `Week ${weekNumber} Kickoff: ${d}d ${h}:${m}:${s}`;
+  }
 
   const order: Array<[PickType,string]> = [
     ['ATS_FAV','FAV'],
@@ -44,10 +46,26 @@ export default function MyWeekHeader({
     <div className="sticky-header">
       <div className="container">
         <div className="card header-card">
-          <div className="h1">SHEET MEAT | WEEK {weekNumber}</div>
-          <div style={{display:'flex',gap:12,justifyContent:'center',marginTop:8}}>
-            <div className="countdown-wrap"><div className="countdown">{countdown}</div></div>
+          {/* 3-column grid keeps title centered with right action */}
+          <div className="hdr-grid">
+            <div className="left" />
+            <div className="center">
+              <div className="h1">SHEET MEAT | WEEK {weekNumber}</div>
+            </div>
+            <div className="right">
+              <Link href="/leaderboard" className="tile-link" aria-label="Open Leaderboard">
+                <span className="emoji" aria-hidden>🏆 </span>
+                <span>Leaderboard</span>
+              </Link>
+            </div>
           </div>
+
+          <div className="kickoff-wrap">
+            <div className="kickoff-chip">
+              {fmtCountdown()}
+            </div>
+          </div>
+
           <div className="small center" style={{marginTop:8}}>
             {freezeAt ? <div>Lines frozen: {fmtET(freezeAt)}</div> : null}
           </div>
@@ -62,6 +80,41 @@ export default function MyWeekHeader({
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .hdr-grid {
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
+          align-items: center;
+          gap: 12px;
+        }
+        .center { display: flex; justify-content: center; }
+        .right { display: flex; justify-content: flex-end; }
+
+        /* Tile-y action with clearer border */
+        .tile-link {
+          display: inline-flex; align-items: center; gap: 8px;
+          padding: 6px 10px; border-radius: 12px;
+          border: 1px solid #d1d5db; background: #ffffff; color: #374151;
+          font-size: 13px; font-weight: 700; text-decoration: none;
+          box-shadow: 0 1px 0 rgba(17,24,39,0.03);
+        }
+        .tile-link:hover { background: #f9fafb; }
+        .emoji { font-size: 14px; }
+
+        /* Bordered countdown chip */
+        .kickoff-wrap { display:flex; justify-content:center; margin-top: 8px; }
+        .kickoff-chip {
+          border: 1px solid #e5e7eb;
+          border-radius: 9999px;
+          padding: 6px 12px;
+          font-variant-numeric: tabular-nums;
+          background: #ffffff;
+          color: #111827;
+          box-shadow: 0 1px 0 rgba(17,24,39,0.03);
+          font-weight: 700;
+        }
+      `}</style>
     </div>
   );
 }

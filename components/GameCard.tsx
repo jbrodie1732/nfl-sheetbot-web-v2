@@ -1,10 +1,12 @@
-// components/GameCard.enhanced.tsx
+
+// components/GameCard.tsx (v3 - await onChanged before toast)
 'use client';
 import { useState, useMemo, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { fmtET } from '@/lib/time';
 import DistributionBar from '@/components/DistributionBar';
 import PublicPicks from '@/components/PublicPicks';
+import LockCountdown from '@/components/LockCountdown';
 
 type Game = {
   id: number;
@@ -12,11 +14,11 @@ type Game = {
   starts_at: string;
   favorite_team_abbr: string | null;
   dog_team_abbr: string | null;
-  freeze_spread: number | null; // negative for favorite
+  freeze_spread: number | null;
   freeze_total: number | null;
   away_abbr: string;
   home_abbr: string;
-  header: string; // from view
+  header: string;
   final_home_score?: number | null;
   final_away_score?: number | null;
   final_at?: string | null;
@@ -33,7 +35,7 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
   game: Game;
   weekNumber: number;
   myPicks: PickMap;
-  onChanged: () => void;
+  onChanged: () => Promise<void>;
   onSaved: (msg: string) => void;
 }){
   const [busy, setBusy] = useState(false);
@@ -42,19 +44,23 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
   const isFinal = !!game.final_at;
 
   async function choose(type: 'ATS_FAV'|'ATS_DOG'|'TOTAL_OVER'|'TOTAL_UNDER'){
-    if (locked && !isFinal) return; // locked means no changes
+    if (locked && !isFinal) return;
     setBusy(true);
     const { error } = await supabase.rpc('upsert_pick', {
       p_week_number: weekNumber,
       p_game_id: game.id,
       p_pick_type: type
     });
+    if (error) {
+      setBusy(false);
+      alert(error.message);
+      return;
+    }
+    await onChanged();
+    onSaved('Pick Saved!');
     setBusy(false);
-    if (error) alert(error.message);
-    else { onChanged(); onSaved('Pick Saved!'); }
   }
 
-  // fetch my result after final to badge buttons
   useEffect(()=>{
     if (!isFinal) return
     let mounted = true
@@ -78,10 +84,8 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
   const favSpread = favSpreadNum!=null ? fmt1(favSpreadNum) : '';
   const dogSpreadNum = favSpreadNum!=null ? -1*Number(favSpreadNum) : null;
   const dogSpread = dogSpreadNum!=null ? (dogSpreadNum>0?'+':'') + fmt1(dogSpreadNum) : '';
-
   const total = game.freeze_total!=null ? fmt1(game.freeze_total) : '';
 
-  // Header: prefer view-provided header; fallback if missing
   const headerText = useMemo(() => {
     if (game.header) return game.header;
     if (game.favorite_team_abbr && favSpreadNum!=null) {
@@ -102,11 +106,9 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
   const overSelLabel = `OVER Selected ${total?`(o${total})`:''}`;
   const underSelLabel = `UNDER Selected ${total?`(u${total})`:''}`;
 
-  // Guards: allow opposite switching, but disable if no line or final/locked
   const atsLineMissing = game.favorite_team_abbr == null || game.dog_team_abbr == null || favSpreadNum == null;
   const totalLineMissing = game.freeze_total == null;
 
-  // Badge helper
   function badgeFor(type:'ATS_FAV'|'ATS_DOG'|'TOTAL_OVER'|'TOTAL_UNDER'){
     if (!isFinal) return null
     if (!myResult || myResult.pick_type !== type) return null
@@ -115,23 +117,22 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
     return <span className="badge" style={{background: color}}>{r}</span>
   }
 
-  const tooltipNoLine = 'Line unavailable';
-
   return (
     <div className="card" style={{marginBottom:10}}>
-      <div className="h2">{headerText}</div>
+      <div className="hdr-grid">
+        <div />
+        <div className="h2 center">{headerText}</div>
+        <div className="right"><LockCountdown startsAtISO={game.starts_at} /></div>
+      </div>
 
-      {/* lock time first */}
-      <div className="lock-subtext">Locks: {fmtET(game.starts_at)}</div>
+      <div className="lock-subtext">Kickoff: {fmtET(game.starts_at)}</div>
 
-      {/* fact tiles after lock */}
       <div className="fact-tiles">
         <span className="tile">Fav: {game.favorite_team_abbr ?? '-'} {favSpread?`(${favSpread})`:''}</span>
         <span className="tile">Dog: {game.dog_team_abbr ?? '-' } {dogSpread?`(${dogSpread})`:''}</span>
         <span className="tile">O/U: {total || '-'}</span>
       </div>
 
-      {/* Distribution bars (only meaningful after lock) */}
       {locked && (
         <div className="dists">
           <DistributionBar gameId={game.id} kind="ATS" />
@@ -145,7 +146,7 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
         <div className="col">
           <button
             disabled={busy || atsLineMissing || locked}
-            title={atsLineMissing ? tooltipNoLine : ''}
+            title={atsLineMissing ? 'Line unavailable' : ''}
             onClick={()=>choose('ATS_FAV')}
             className={`btn ${favSel?'btn-selected':''}`}
           >
@@ -153,7 +154,7 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
           </button>
           <button
             disabled={busy || atsLineMissing || locked}
-            title={atsLineMissing ? tooltipNoLine : ''}
+            title={atsLineMissing ? 'Line unavailable' : ''}
             onClick={()=>choose('ATS_DOG')}
             className={`btn ${dogSel?'btn-selected':''}`}
           >
@@ -163,7 +164,7 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
         <div className="col">
           <button
             disabled={busy || totalLineMissing || locked}
-            title={totalLineMissing ? tooltipNoLine : ''}
+            title={totalLineMissing ? 'Line unavailable' : ''}
             onClick={()=>choose('TOTAL_OVER')}
             className={`btn ${overSel?'btn-selected':''}`}
           >
@@ -171,7 +172,7 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
           </button>
           <button
             disabled={busy || totalLineMissing || locked}
-            title={totalLineMissing ? tooltipNoLine : ''}
+            title={totalLineMissing ? 'Line unavailable' : ''}
             onClick={()=>choose('TOTAL_UNDER')}
             className={`btn ${underSel?'btn-selected':''}`}
           >
@@ -180,10 +181,17 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
         </div>
       </div>
 
-      {/* Public picks (post-lock) */}
       {locked && <PublicPicks gameId={game.id} locked={locked} />}
 
       <style jsx>{`
+        .hdr-grid{
+          display:grid;
+          grid-template-columns: 1fr auto 1fr;
+          align-items:center;
+          margin-bottom: 2px;
+        }
+        .center{ display:flex; justify-content:center; }
+        .right{ display:flex; justify-content:flex-end; }
         .badge {
           margin-left: 8px;
           border-radius: 10px;

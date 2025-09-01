@@ -1,16 +1,13 @@
+// app/layout.tsx
+import './globals.css'
+import { Inter } from 'next/font/google'
 
-import './globals.css';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Sheet Meat',
-  description: 'NFL picks made simple',
-};
+const inter = Inter({ subsets: ['latin'], display: 'swap' })
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.className}>
       <body>{children}</body>
     </html>
-  );
+  )
 }

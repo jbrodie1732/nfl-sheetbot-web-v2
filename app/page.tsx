@@ -1,10 +1,11 @@
 
+// app/page.tsx (v4 - fixed toast CSS names + scoped styles)
 'use client';
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import MyWeekHeader from '@/components/MyWeekHeader';
 import GameCard from '@/components/GameCard';
-import Leaderboard from '@/components/Leaderboard';
+import SlateHeader from '@/components/SlateHeader';
 
 type PickType = 'ATS_FAV' | 'ATS_DOG' | 'TOTAL_OVER' | 'TOTAL_UNDER';
 type PickMap = { [k: string]: { pick_type: PickType; game_id: number } };
@@ -77,7 +78,7 @@ export default function Page(){
     setTimeout(() => setToast(''), 1600);
   };
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (): Promise<void> => {
     const { data: { user } } = await supabase.auth.getUser();
     setMe(user ?? null);
 
@@ -166,7 +167,6 @@ export default function Page(){
     return out;
   }, [rows, pickMap]);
 
-  // Group rows by time window label
   const grouped = useMemo(() => {
     const groups: Array<{ label: string; items: GameRow[] }> = [];
     let currentLabel: string | null = null;
@@ -197,8 +197,8 @@ export default function Page(){
 
   return (
     <div>
-      <div className="toast-wrap" aria-live="polite" aria-atomic="true">
-        {toast ? <div className="toast">{toast}</div> : null}
+      <div className="sm-toast-wrap" aria-live="polite" aria-atomic="true">
+        {toast ? <div className="sm-toast">{toast}</div> : null}
       </div>
 
       <MyWeekHeader
@@ -211,15 +211,37 @@ export default function Page(){
       <div className="container">
         {grouped.map(group => (
           <div key={group.label}>
-            <div className="section-title">{group.label}</div>
+            <SlateHeader>{group.label}</SlateHeader>
             {group.items.map((r) => (
-              <GameCard key={r.id} weekNumber={weekNumber} game={r as any} myPicks={pickMap} onChanged={load} onSaved={showToast} />
+              <GameCard
+                key={r.id}
+                weekNumber={weekNumber}
+                game={r as any}
+                myPicks={pickMap}
+                onChanged={load}
+                onSaved={msg=> showToast(msg)}
+              />
             ))}
           </div>
         ))}
-
-        <Leaderboard weekNumber={weekNumber} />
       </div>
+
+      <style jsx>{`
+        .sm-toast-wrap{
+          position:fixed; left:50%; transform:translateX(-50%);
+          bottom:16px; z-index:50; pointer-events:none;
+        }
+        .sm-toast{
+          display:inline-block;
+          max-width: calc(100vw - 32px);
+          padding:10px 14px;
+          border-radius:12px;
+          background:#10b981;
+          color:#fff; font-weight:700; font-size:14px;
+          box-shadow: 0 8px 28px rgba(0,0,0,.10);
+          pointer-events:auto;
+        }
+      `}</style>
     </div>
   );
 }
