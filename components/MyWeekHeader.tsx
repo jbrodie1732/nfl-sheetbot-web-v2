@@ -1,13 +1,21 @@
-
 'use client';
 import { useEffect, useState } from 'react';
 import { fmtET } from '@/lib/time';
 
-export default function MyWeekHeader({ weekNumber, submitOpenAt, freezeAt, nextKickoff }: {
+type PickType = 'ATS_FAV'|'ATS_DOG'|'TOTAL_OVER'|'TOTAL_UNDER';
+
+export default function MyWeekHeader({
+  weekNumber,
+  submitOpenAt,
+  freezeAt,
+  nextKickoffISO,
+  summaryByType
+}: {
   weekNumber: number;
-  submitOpenAt: string | null;
-  freezeAt: string | null;
-  nextKickoff: string | null;
+  submitOpenAt: string | null | undefined;
+  freezeAt: string | null | undefined;
+  nextKickoffISO: string | null | undefined;
+  summaryByType: Record<string, string>;
 }) {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
@@ -16,8 +24,8 @@ export default function MyWeekHeader({ weekNumber, submitOpenAt, freezeAt, nextK
   }, []);
 
   const countdown = (() => {
-    if (!nextKickoff) return 'All games complete';
-    const target = new Date(nextKickoff).getTime();
+    if (!nextKickoffISO) return 'All games complete';
+    const target = new Date(nextKickoffISO).getTime();
     const diff = Math.max(0, target - now);
     const s = Math.floor(diff / 1000);
     const h = Math.floor(s / 3600);
@@ -26,14 +34,40 @@ export default function MyWeekHeader({ weekNumber, submitOpenAt, freezeAt, nextK
     return `${h}h ${m}m ${sec}s`;
   })();
 
+  const chips: Array<[PickType,string]> = [
+    ['ATS_FAV', 'FAV'],
+    ['ATS_DOG', 'DOG'],
+    ['TOTAL_OVER', 'OVER'],
+    ['TOTAL_UNDER', 'UNDER'],
+  ];
+
   return (
-    <div className="header">
+    <div className="sticky-header">
       <div className="container">
-        <div className="title">SHEET MEAT | WEEK {weekNumber}</div>
-        <div className="countdown">{countdown}</div>
-        <div className="subinfo">
-          {submitOpenAt ? <span>Submissions open: {fmtET(submitOpenAt)}</span> : null}
-          {freezeAt ? <span>Lines frozen: {fmtET(freezeAt)}</span> : null}
+        <div className="card header-card">
+          <div className="row" style={{justifyContent:'space-between'}}>
+            <div>
+              <div className="h1">SHEET MEAT | WEEK {weekNumber}</div>
+              <div className="small">
+                {submitOpenAt ? <span>Submissions open: {fmtET(submitOpenAt)}</span> : null}
+                {submitOpenAt && freezeAt ? <span> &nbsp;•&nbsp; </span> : null}
+                {freezeAt ? <span>Lines frozen: {fmtET(freezeAt)}</span> : null}
+              </div>
+            </div>
+            <div className="countdown-wrap"><div className="countdown">{countdown}</div></div>
+          </div>
+
+          <div className="chip-row">
+            {chips.map(([key,label]) => {
+              const s = summaryByType[key];
+              const on = Boolean(s);
+              return (
+                <span key={key} className={`chip ${on ? 'chip-on':''}`}>
+                  {s ? s : label}
+                </span>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
