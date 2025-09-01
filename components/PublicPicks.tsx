@@ -1,4 +1,4 @@
-// components/PublicPicks.tsx
+// components/PublicPicks.updated.tsx
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
@@ -11,12 +11,13 @@ type Row = {
   created_at: string
 }
 
-export default function PublicPicks({ gameId }: { gameId: number }){
+export default function PublicPicks({ gameId, locked }: { gameId: number, locked: boolean }){
   const [rows, setRows] = useState<Row[]|null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string|null>(null)
 
   useEffect(()=>{
+    if (!locked) return
     let mounted = true
     async function load(){
       setLoading(true); setError(null)
@@ -27,10 +28,11 @@ export default function PublicPicks({ gameId }: { gameId: number }){
       setLoading(false)
     }
     load()
-    const timer = setInterval(load, 30_000) // light poll every 30s
+    const timer = setInterval(load, 120_000) // poll every 2 minutes
     return ()=>{ mounted=false; clearInterval(timer) }
-  }, [gameId])
+  }, [gameId, locked])
 
+  if (!locked) return null
   if (loading && !rows) return <div className="muted">Loading public picks…</div>
   if (error) return <div className="error">Failed to load public picks: {error}</div>
   if (!rows || rows.length === 0) return <div className="muted">No picks revealed yet.</div>
