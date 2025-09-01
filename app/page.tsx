@@ -236,7 +236,7 @@ export default function Page(){
           max-width: calc(100vw - 32px);
           padding:10px 14px;
           border-radius:12px;
-          background:#10b981;
+          background:#1e7d2e;
           color:#fff; font-weight:700; font-size:14px;
           box-shadow: 0 8px 28px rgba(0,0,0,.10);
           pointer-events:auto;

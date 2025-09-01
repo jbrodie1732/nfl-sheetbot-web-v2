@@ -1,4 +1,4 @@
-// components/PublicPicks.updated.tsx
+// components/PublicPicks.tsx
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'

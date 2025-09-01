@@ -37,6 +37,7 @@ export default function HeaderMenu(){
         <div ref={panelRef} className="hm-pop" role="menu" aria-label="Main menu">
           <Link href="/" className="hm-item" role="menuitem" onClick={close}>🏟️ Home</Link>
           <Link href="/leaderboard" className="hm-item" role="menuitem" onClick={close}>🏆 Leaderboard</Link>
+          <Link href="/myPicks" className="hm-item" role="menuitem" onClick={close}>📋 My Picks</Link>
           {/* Add more links later */}
         </div>
       )}
