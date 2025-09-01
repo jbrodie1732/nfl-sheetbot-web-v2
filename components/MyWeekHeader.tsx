@@ -1,9 +1,9 @@
 
-// components/MyWeekHeader.tsx (v4 - mobile sizing tweaks)
+// components/MyWeekHeader.tsx
 'use client';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { fmtET } from '@/lib/time';
+import HeaderMenu from '@/components/HeaderMenu';
 
 type PickType = 'ATS_FAV'|'ATS_DOG'|'TOTAL_OVER'|'TOTAL_UNDER';
 
@@ -52,10 +52,7 @@ export default function MyWeekHeader({
               <div className="h1">SHEET MEAT | WEEK {weekNumber}</div>
             </div>
             <div className="right">
-              <Link href="/leaderboard" className="tile-link" aria-label="Open Leaderboard">
-                <span className="emoji" aria-hidden>🏆 </span>
-                <span className="tile-text">Leaderboard</span>
-              </Link>
+              <HeaderMenu />
             </div>
           </div>
 
@@ -90,18 +87,6 @@ export default function MyWeekHeader({
         .center { display: flex; justify-content: center; }
         .right { display: flex; justify-content: flex-end; }
 
-        .tile-link {
-          display: inline-flex; align-items: center; gap: 8px;
-          padding: 6px 10px; border-radius: 12px;
-          border: 1px solid #d1d5db; background: #ffffff; color: #374151;
-          font-size: 13px; font-weight: 700; text-decoration: none;
-          box-shadow: 0 1px 0 rgba(17,24,39,0.03);
-          white-space: nowrap;
-        }
-        .tile-link:hover { background: #f9fafb; }
-        .emoji { font-size: 10px; }
-        .tile-text { display:inline-block; font-size: 12px; }
-
         .kickoff-wrap { display:flex; justify-content:center; margin-top: 8px; }
         .kickoff-chip {
           border: 1px solid #e5e7eb;
@@ -110,21 +95,21 @@ export default function MyWeekHeader({
           font-variant-numeric: tabular-nums;
           background: #ffffff;
           color: #111827;
-          box-shadow: 0 1px 0 rgba(17,24,39,0.03);
+          box-shadow: 0 1px 0 rgba(17,24,39,0,0.03);
           font-weight: 700;
           font-size: 14px;
         }
 
         .chip-row { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:8px; }
+        /* Transparent chips, white text */
         .chip {
-          border:1px solid #2b3a4f; border-radius:9999px; padding:4px 10px;
+          border:1px solid #e5e7eb; border-radius:9999px; padding:4px 10px;
           background:transparent; color:#ffffff; font-size:13px; font-weight:300;
         }
-        .chip-on { background:transparent; border-color:#0bf446; color:#ffffff; }
+        .chip-on { background:transparent; border-color:#10b981; color:#ffffff; }
 
         /* Mobile tweaks */
         @media (max-width: 480px){
-          .tile-link{ font-size:10px; padding:3px 6px; }
           .kickoff-chip{ font-size:12px; padding:5px 10px; }
           .chip{ font-size:12px; padding:3px 8px; }
           .h1{ font-size:18px; }

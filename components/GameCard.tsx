@@ -203,7 +203,7 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
         }
         @media (max-width: 480px){
           .lock-scale{ transform: scale(0.85); transform-origin: top right; }
-          .h2{ font-size:16px; }
+          .h2{ font-size:17px; }
         }
       `}</style>
     </div>
