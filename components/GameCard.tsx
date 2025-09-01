@@ -1,4 +1,3 @@
-
 'use client';
 import { useState, useMemo } from 'react';
 import { supabase } from '@/lib/supabaseClient';
@@ -14,7 +13,7 @@ type Game = {
   freeze_total: number | null;
   away_abbr: string;
   home_abbr: string;
-  header: string; // from view (not trusted for spread position)
+  header: string; // from view
 };
 
 type PickMap = { [k: string]: { pick_type: 'ATS_FAV'|'ATS_DOG'|'TOTAL_OVER'|'TOTAL_UNDER'; game_id: number } };
@@ -59,15 +58,16 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
 
   const total = game.freeze_total!=null ? fmt1(game.freeze_total) : '';
 
-  // Header: FAV (-x.x) @ OTHER
+  // Header: prefer view-provided header; fallback if missing
   const headerText = useMemo(() => {
+    if (game.header) return game.header;
     if (game.favorite_team_abbr && favSpreadNum!=null) {
       const fav = game.favorite_team_abbr;
       const other = (fav === game.home_abbr ? game.away_abbr : game.home_abbr) || '';
       return `${fav} (${fmt1(favSpreadNum)}) @ ${other}`;
     }
     return `${game.away_abbr} @ ${game.home_abbr}`;
-  }, [game.favorite_team_abbr, favSpreadNum, game.away_abbr, game.home_abbr]);
+  }, [game.header, game.favorite_team_abbr, favSpreadNum, game.away_abbr, game.home_abbr]);
 
   const favLabel = `Pick FAV: ${game.favorite_team_abbr ?? ''}${favSpread?` (${favSpread})`:''}`;
   const dogLabel = `Pick DOG: ${game.dog_team_abbr ?? ''}${dogSpread?` (${dogSpread})`:''}`;
@@ -78,6 +78,10 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
   const dogSelLabel = `DOG Selected: ${game.dog_team_abbr ?? ''}${dogSpread?` (${dogSpread})`:''}`;
   const overSelLabel = `OVER Selected ${total?`(o${total})`:''}`;
   const underSelLabel = `UNDER Selected ${total?`(u${total})`:''}`;
+
+  // Guards: keep only line-missing & lock; allow opposite to switch
+  const atsLineMissing = game.favorite_team_abbr == null || game.dog_team_abbr == null || favSpreadNum == null;
+  const totalLineMissing = game.freeze_total == null;
 
   return (
     <div className="card" style={{marginBottom:10}}>
@@ -97,12 +101,36 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
 
       <div className="button-columns" style={{marginTop:8}}>
         <div className="col">
-          <button disabled={busy||locked} onClick={()=>choose('ATS_FAV')} className={`btn ${favSel?'btn-selected':''}`}>{favSel?favSelLabel:favLabel}</button>
-          <button disabled={busy||locked} onClick={()=>choose('ATS_DOG')} className={`btn ${dogSel?'btn-selected':''}`}>{dogSel?dogSelLabel:dogLabel}</button>
+          <button
+            disabled={busy || locked || atsLineMissing}
+            onClick={()=>choose('ATS_FAV')}
+            className={`btn ${favSel?'btn-selected':''}`}
+          >
+            {favSel?favSelLabel:favLabel}
+          </button>
+          <button
+            disabled={busy || locked || atsLineMissing}
+            onClick={()=>choose('ATS_DOG')}
+            className={`btn ${dogSel?'btn-selected':''}`}
+          >
+            {dogSel?dogSelLabel:dogLabel}
+          </button>
         </div>
         <div className="col">
-          <button disabled={busy||locked} onClick={()=>choose('TOTAL_OVER')} className={`btn ${overSel?'btn-selected':''}`}>{overSel?overSelLabel:overLabel}</button>
-          <button disabled={busy||locked} onClick={()=>choose('TOTAL_UNDER')} className={`btn ${underSel?'btn-selected':''}`}>{underSel?underSelLabel:underLabel}</button>
+          <button
+            disabled={busy || locked || totalLineMissing}
+            onClick={()=>choose('TOTAL_OVER')}
+            className={`btn ${overSel?'btn-selected':''}`}
+          >
+            {overSel?overSelLabel:overLabel}
+          </button>
+          <button
+            disabled={busy || locked || totalLineMissing}
+            onClick={()=>choose('TOTAL_UNDER')}
+            className={`btn ${underSel?'btn-selected':''}`}
+          >
+            {underSel?underSelLabel:underLabel}
+          </button>
         </div>
       </div>
     </div>
