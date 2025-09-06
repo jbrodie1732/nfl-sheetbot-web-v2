@@ -1,4 +1,4 @@
-// components/DistributionBar.tsx
+// components/DistributionBar.tsx (updated: DOG/UNDER on the left, FAV/OVER on the right)
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -33,12 +33,16 @@ export default function DistributionBar({ gameId, kind }:{ gameId:number, kind:'
   let left = 0, right = 0, leftLabel = '', rightLabel = ''
   if (kind === 'ATS'){
     const sum = a + b; if (sum === 0) return <div className="muted">No ATS picks yet.</div>
-    left = Math.round((a / sum) * 100); right = 100 - left
-    leftLabel = `FAV ${left}%`; rightLabel = `DOG ${right}%`
+    // dogs on the left, favs on the right
+    left  = Math.round((b / sum) * 100)
+    right = 100 - left
+    leftLabel = `DOG: ${left}%`; rightLabel = `FAV: ${right}%`
   } else {
     const sum = o + u; if (sum === 0) return <div className="muted">No TOTAL picks yet.</div>
-    left = Math.round((o / sum) * 100); right = 100 - left
-    leftLabel = `OVER ${left}%`; rightLabel = `UNDER ${right}%`
+    // unders on the left, overs on the right
+    left  = Math.round((u / sum) * 100)
+    right = 100 - left
+    leftLabel = `UNDER: ${left}%`; rightLabel = `OVER: ${right}%`
   }
 
   return (
@@ -53,10 +57,10 @@ export default function DistributionBar({ gameId, kind }:{ gameId:number, kind:'
       </div>
       <style jsx>{`
         .dist-wrap { margin-top: 6px; }
-        .dist-bar { display:flex; height: 8px; border-radius: 9999px; overflow: hidden; border: 1px solid #e5e7eb; }
-        .left { flex: 0 0 auto; background: #e0f2fe; } /* light blue */
-        .right { flex: 0 0 auto; background: #fee2e2; } /* light red */
-        .labels { display:flex; justify-content: space-between; font-size: 12px; color:#6b7280; margin-top: 4px; }
+        .dist-bar { display:flex; height: 8px; border-radius: 9999px; overflow: hidden; border: 2px solid #ebeef3ff; }
+        .left { flex: 0 0 auto; background: #173746ff; } /* darker blue */
+        .right { flex: 0 0 auto; background: #a9f6ffff; } /* light blue */
+        .labels { display:flex; justify-content: space-between; font-size: 10px; color:#6b7280; margin-top: 4px; }
         .muted { color:#9ca3af; font-size:12px; }
       `}</style>
     </div>

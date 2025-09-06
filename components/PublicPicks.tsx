@@ -21,7 +21,7 @@ export default function PublicPicks({ gameId, locked }: { gameId: number, locked
     let mounted = true
     async function load(){
       setLoading(true); setError(null)
-      const { data, error } = await supabase.rpc('get_public_picks_for_game', { p_game_id: gameId })
+      const { data, error } = await supabase.rpc('get_public_picks_for_game_v2', { p_game_id: gameId })
       if (!mounted) return
       if (error) setError(error.message)
       setRows(data || [])
