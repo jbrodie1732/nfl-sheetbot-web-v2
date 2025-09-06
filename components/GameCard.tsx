@@ -167,7 +167,7 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
         {locked && (
           <div className={`expand-abs ${collapsed ? '' : 'open'}`}>
             <span className="caret" aria-hidden>▸</span>
-            <span className="hint-text">Expand for Pick Stats</span>
+            <span className="hint-text">Pick Stats</span>
             <span className="emoji" aria-hidden>⤵️</span>
           </div>
         )}
@@ -289,7 +289,7 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
         .expand-abs{
           position: absolute; left: 0; top: 0;
           display:inline-flex; align-items:center; gap:6px;
-          font-size: 10px;
+          font-size: 8px;
           color:rgba(255, 255, 255, 0.39); /* indigo-300 for visibility */
           background: rgba(7, 6, 39, 0.21); /* indigo-600 / 12% */
           border: 1px solid rgba(76, 77, 118, 0.49);
@@ -333,7 +333,7 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
         .list { display:flex; flex-direction:column; gap:8px; align-items:center; }
         /* Narrower, centered revealed-pick tiles */
         .row {
-          width: min(100%, 460px);
+          width: min(100%, 350px);
           display:flex;
           align-items:center;
           justify-content:space-between;
