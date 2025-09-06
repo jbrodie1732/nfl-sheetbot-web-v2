@@ -1,12 +1,11 @@
-
-// components/LeaderboardTable.tsx (mobile dot for "You" chip; responsive table)
+// components/LeaderboardTable.tsx — fallback names + expandable-friendly
 'use client'
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 
 type Row = {
   user_id: string
-  nickname: string
+  nickname: string | null
   week_number?: number | null
   wins: number
   pushes: number
@@ -46,13 +45,26 @@ export default function LeaderboardTable({ mode, weekNumber }: { mode: 'season'|
     return ()=>{ mounted=false; clearInterval(timer); window.removeEventListener('sheetmeat:profile-updated', bump) }
   }, [mode, weekNumber])
 
+  const displayName = (r: Row) => {
+    const name = (r.nickname ?? '').trim()
+    return name || `Player-${r.user_id.slice(0,8)}`
+  }
+
   const sorted = useMemo(()=>{
     const arr = [...rows]
     arr.sort((a,b)=>{
-      const va = (a as any)[sortKey] ?? 0, vb = (b as any)[sortKey] ?? 0
-      if (va < vb) return sortDir === 'asc' ? -1 : 1
-      if (va > vb) return sortDir === 'asc' ? 1 : -1
-      return 0
+      if (sortKey === 'nickname') {
+        const va = displayName(a).toLowerCase()
+        const vb = displayName(b).toLowerCase()
+        if (va < vb) return sortDir === 'asc' ? -1 : 1
+        if (va > vb) return sortDir === 'asc' ? 1 : -1
+        return 0
+      } else {
+        const va = (a as any)[sortKey] ?? 0, vb = (b as any)[sortKey] ?? 0
+        if (va < vb) return sortDir === 'asc' ? -1 : 1
+        if (va > vb) return sortDir === 'asc' ? 1 : -1
+        return 0
+      }
     })
     return arr
   }, [rows, sortKey, sortDir])
@@ -78,7 +90,7 @@ export default function LeaderboardTable({ mode, weekNumber }: { mode: 'season'|
           </colgroup>
           <thead>
             <tr>
-              <th className="rank">#</th>
+              <th className="rank">Rank</th>
               <th className="name" onClick={()=>onSort('nickname')}>Player</th>
               {mode==='week' && <th className="week">Week</th>}
               <th className="num" onClick={()=>onSort('wins')}>W</th>
@@ -90,11 +102,12 @@ export default function LeaderboardTable({ mode, weekNumber }: { mode: 'season'|
           <tbody>
             {sorted.map((r, i)=> {
               const isMe = myId && r.user_id === myId
+              const name = displayName(r)
               return (
                 <tr key={r.user_id + (r.week_number ?? '')}>
                   <td className="rank num">{i+1}</td>
-                  <td className="name">
-                    <span className="name-text" title={r.nickname}>{r.nickname}</span>
+                  <td className="name" title={name}>
+                    <span className="name-text">{name}</span>
                     {isMe && <span className="you">You</span>}
                   </td>
                   {mode==='week' && <td className="week num">{r.week_number}</td>}
@@ -112,7 +125,7 @@ export default function LeaderboardTable({ mode, weekNumber }: { mode: 'season'|
         .lb { width: 100%; }
         .table-wrap{ width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        th, td { padding: 10px 12px; border-bottom: 1px solid #e5e7eb; overflow: hidden; text-overflow: ellipsis; }
+        th, td { padding: 10px 12px; border-bottom: 1px solid #ebe5e5ff; overflow: hidden; text-overflow: ellipsis; }
         th { text-align: left; font-weight: 600; color: #374151; cursor: pointer; }
         td.name { white-space: nowrap; }
         .name-text { display:inline-block; max-width: 100%; vertical-align: bottom; overflow: hidden; text-overflow: ellipsis; }
@@ -129,12 +142,12 @@ export default function LeaderboardTable({ mode, weekNumber }: { mode: 'season'|
           border: 1px solid #bfdbfe;
         }
 
-        .num { text-align: right; white-space: nowrap; }
-        .rank { width: 44px; }
-        .c-rank { width: 44px; }
-        .c-name { width: auto; }
-        .c-num { width: 56px; }
-        .c-week { width: 64px; }
+        .num { text-align: center; white-space: nowrap; }
+        .rank { text-align: center; width: 44px; }
+        .c-rank { text-align: center; width: 80px; }
+        .c-name { text-align: center; width: auto; }
+        .c-num { text-align: center; width: 56px; }
+        .c-week { text-align: center; width: 64px; }
 
         /* Mobile: tighter fonts, hide Week column, tighten padding, and swap "You" chip for a dot */
         @media (max-width: 480px){
@@ -146,11 +159,11 @@ export default function LeaderboardTable({ mode, weekNumber }: { mode: 'season'|
           /* Replace the text chip with a small light-blue dot so it never gets cut off */
           .you {
             display:inline-block;
-            width: 8px; height: 8px;
+            width: 7px; height: 7px;
             padding: 0; margin-left: 6px;
             border-radius: 9999px;
-            background: #93c5fd;     /* light blue */
-            border: 1px solid #60a5fa;
+            background: #b8dcf7ff;     /* light blue */
+            border: 1px solid #9cc8fdff;
             color: transparent; font-size: 0; line-height: 0; /* hide "You" text */
           }
         }

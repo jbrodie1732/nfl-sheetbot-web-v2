@@ -1,4 +1,4 @@
-// app/leaderboard/page.tsx  (Server Component; NO styled-jsx)
+// app/leaderboard/page.tsx — Season first + expandable sections (native <details>)
 import Link from 'next/link'
 import LeaderboardTable from '@/components/LeaderboardTable'
 import EditNicknamePopover from '@/components/EditNicknamePopover'
@@ -30,7 +30,14 @@ export default async function Page(){
       background:'#111827', color:'#ffffff', fontSize:13, fontWeight:700,
       textDecoration:'none', boxShadow:'0 1px 0 rgba(17,24,39,0.03)', whiteSpace:'nowrap'
     },
-    sub: { color:'#6b7280', marginBottom:16 }
+    sub: { color:'#6b7280', marginBottom:16 },
+    details: { marginBottom: 18, border:'1px solid #e5e7eb', borderRadius:12, overflow:'hidden', background:'#0b1220' },
+    summary: {
+      cursor:'pointer', listStyle:'none', padding:'10px 12px', fontWeight:700,
+      display:'flex', alignItems:'center', justifyContent:'space-between',
+      background:'#0f172a', color:'#e2e8f0'
+    },
+    sectionBody: { padding:'12px' }
   }
 
   return (
@@ -47,17 +54,27 @@ export default async function Page(){
 
       <p style={styles.sub}>Compare weekly performance or season totals.</p>
 
-      <section style={{marginBottom:24}}>
-        <h2 style={{fontSize:18, fontWeight:700, marginBottom:8}}>
-          This Week {weekNumber ? `(Week ${weekNumber})` : ''}
-        </h2>
-        <LeaderboardTable mode="week" weekNumber={weekNumber} />
-      </section>
+      {/* SEASON FIRST */}
+      <details open style={styles.details}>
+        <summary style={styles.summary}>
+          <span>Season Standings</span>
+          <span aria-hidden>▾</span>
+        </summary>
+        <div style={styles.sectionBody}>
+          <LeaderboardTable mode="season" />
+        </div>
+      </details>
 
-      <section>
-        <h2 style={{fontSize:18, fontWeight:700, marginBottom:8}}>Season</h2>
-        <LeaderboardTable mode="season" />
-      </section>
+      {/* THIS WEEK SECOND */}
+      <details style={styles.details}>
+        <summary style={styles.summary}>
+          <span>This Week {weekNumber ? `(Week ${weekNumber})` : ''}</span>
+          <span aria-hidden>▾</span>
+        </summary>
+        <div style={styles.sectionBody}>
+          <LeaderboardTable mode="week" weekNumber={weekNumber} />
+        </div>
+      </details>
     </div>
   )
 }
