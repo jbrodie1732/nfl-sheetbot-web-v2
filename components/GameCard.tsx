@@ -125,7 +125,7 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
       const other = (fav === game.home_abbr ? game.away_abbr : game.home_abbr) || '';
       return `${fav} (${fmt1(favSpreadNum)}) @ ${other}`;
     }
-    return `${game.away_abbr} @ ${game.home_abbr}`;
+    return `${game.home_abbr} @ ${game.away_abbr}`;
   }, [game.header, game.favorite_team_abbr, favSpreadNum, game.away_abbr, game.home_abbr]);
 
   const favLabel = `Pick FAV: ${game.favorite_team_abbr ?? ''}${favSpread?` (${favSpread})`:''}`;
