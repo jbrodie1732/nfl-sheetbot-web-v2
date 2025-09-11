@@ -296,7 +296,8 @@ export default function LeaguePicksPage(){
 
         @media (max-width: 800px){
           th, td { padding: 8px 8px; font-size: 13px; }
-          .pill { max-width: 160px; padding:6px 10px; font-weight: 300; }
+          th { width: 11.0%}
+          .pill { max-width: 175px; padding:6px 10px; font-weight: 300; }
           .title { font-size: 22px; }
         }
       `}</style>

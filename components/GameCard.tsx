@@ -182,8 +182,8 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
       <div className="lock-subtext">Kickoff: {fmtET(game.starts_at)}</div>
 
       <div className="fact-tiles">
-        <span className="tile">Fav: {game.favorite_team_abbr ?? '-'}</span>
-        <span className="tile">Dog: {game.dog_team_abbr ?? '-'}</span>
+        <span className="tile">Fav: {game.favorite_team_abbr ?? '-'} -{fmt1(game.freeze_spread)}</span>
+        <span className="tile">Dog: {game.dog_team_abbr ?? '-'} +{fmt1(game.freeze_spread)}</span>
         <span className="tile">O/U: {total || '-'}</span>
       </div>
 
