@@ -169,7 +169,7 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
         {locked && (
           <div className={`expand-abs ${collapsed ? '' : 'open'}`}>
             <span className="caret" aria-hidden>▸</span>
-            <span className="hint-text">Expand for Pick Stats</span>
+            <span className="hint-text">Pick Stats</span>
             <span className="emoji" aria-hidden>⤵️</span>
           </div>
         )}
@@ -253,7 +253,7 @@ export default function GameCard({ game, weekNumber, myPicks, onChanged, onSaved
       <style jsx>{`
         .hdr{ position: relative; display:flex; align-items:center; justify-content:center; min-height: 36px; margin-bottom: 2px; }
         .toggleable { cursor: pointer; user-select: none; }
-        .expand-abs{ position: absolute; left: 0; top: 0; display:inline-flex; align-items:center; gap:6px; font-size: 11px; color:#a5b4fc; background: rgba(79, 70, 229, 0.12); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 9999px; padding: 2px 8px; }
+        .expand-abs{ position: absolute; left: 0; top: 0; display:inline-flex; align-items:center; gap:6px; font-size: 11px; color:#a5b4fc; background: rgba(20, 18, 57, 0.12); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 9999px; padding: 2px 8px; }
         .expand-abs .caret{ display:inline-block; transform: rotate(0deg); transition: transform .18s ease; }
         .expand-abs.open .caret{ transform: rotate(90deg); }
         .right-abs{ position: absolute; right: 0; top: 0; display:flex; align-items:center; }
